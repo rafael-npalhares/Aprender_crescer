@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Avisos - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .btn-novo {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .btn-novo:hover {
+            background-color: #45a049;
+        }
+        .messages {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .aviso-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .aviso-card.inativo {
+            opacity: 0.6;
+            background-color: #f9f9f9;
+        }
+        .aviso-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+        .aviso-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .badges {
+            display: flex;
+            gap: 8px;
+        }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-fixado {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .badge-inativo {
+            background-color: #dc3545;
+            color: white;
+        }
+        .badge-tipo {
+            background-color: #2196F3;
+            color: white;
+        }
+        .aviso-descricao {
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        .aviso-info {
+            font-size: 14px;
+            color: #888;
+            margin: 10px 0;
+        }
+        .aviso-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-editar {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-editar:hover {
+            background-color: #1976D2;
+        }
+        .btn-deletar {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-deletar:hover {
+            background-color: #da190b;
+        }
+        .btn-fixar {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .btn-fixar:hover {
+            background-color: #ffb300;
+        }
+        .btn-desfixar {
+            background-color: #9e9e9e;
+            color: white;
+        }
+        .btn-desfixar:hover {
+            background-color: #757575;
+        }
+        .sem-avisos {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 8px;
+        }
+        .sem-avisos p {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 Gerenciar Avisos</h1>
+            <a href="/admin/avisos/criar" class="btn-novo">+ Criar Novo Aviso</a>
+        </div>
+
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Lista de Avisos -->
+        {% if avisos %}
+            {% for aviso in avisos %}
+            <div class="aviso-card {% if not aviso.ativo %}inativo{% endif %}">
+                <div class="aviso-header">
+                    <div>
+                        <h2 class="aviso-title">{{ aviso.titulo }}</h2>
+                        <div class="badges">
+                            <span class="badge badge-tipo">{{ aviso.tipo|upper }}</span>
+                            {% if aviso.fixado %}
+                                <span class="badge badge-fixado">📌 Fixado</span>
+                            {% endif %}
+                            {% if not aviso.ativo %}
+                                <span class="badge badge-inativo">Inativo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <p class="aviso-descricao">
+                    {{ aviso.descricao[:200] }}{% if aviso.descricao|length > 200 %}...{% endif %}
+                </p>
+
+                <div class="aviso-info">
+                    📅 Publicado em: {{ aviso.data_postagem.strftime('%d/%m/%Y às %H:%M') }}
+                    {% if aviso.data_expiracao %}
+                        | ⏰ Expira em: {{ aviso.data_expiracao.strftime('%d/%m/%Y') }}
+                    {% endif %}
+                </div>
+
+                <div class="aviso-actions">
+                    <a href="/admin/avisos/editar/{{ aviso.id }}" class="btn btn-editar">✏️ Editar</a>
+                    
+                    {% if aviso.ativo %}
+                        <form method="POST" action="/admin/avisos/deletar/{{ aviso.id }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar este aviso?')">
+                            <button type="submit" class="btn btn-deletar">🗑️ Deletar</button>
+                        </form>
+
+                        {% if aviso.fixado %}
+                            <form method="POST" action="/admin/avisos/desfixar/{{ aviso.id }}" style="display: inline;">
+                                <button type="submit" class="btn btn-desfixar">📌 Desfixar</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="/admin/avisos/fixar/{{ aviso.id }}" style="display: inline;">
+                                <button type="submit" class="btn btn-fixar">📌 Fixar</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="sem-avisos">
+                <p>📭 Nenhum aviso cadastrado ainda.</p>
+                <a href="/admin/avisos/criar" class="btn-novo">Criar Primeiro Aviso</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
