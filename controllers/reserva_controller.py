@@ -131,11 +131,9 @@ def admin_listar_reservas():
     
     return render_template('admin/reservas/listar.html', reservas=reservas)
 
-
 @reserva_bp.route('/admin/reservas/pendentes')
 def admin_listar_pendentes():
 
-    
     tipo_usuario = session.get('tipo_usuario')
     
     if tipo_usuario != 'administrador':
@@ -146,7 +144,6 @@ def admin_listar_pendentes():
     reservas = reserva_model.listar_pendentes()
     
     return render_template('admin/reservas/pendentes.html', reservas=reservas)
-
 
 @reserva_bp.route('/admin/reservas/aprovar/<int:id>', methods=['POST'])
 def admin_aprovar_reserva(id):
@@ -168,10 +165,8 @@ def admin_aprovar_reserva(id):
     
     return redirect(url_for('reserva.admin_listar_pendentes'))
 
-
 @reserva_bp.route('/admin/reservas/reprovar/<int:id>', methods=['POST'])
 def admin_reprovar_reserva(id):
-    
     
     tipo_usuario = session.get('tipo_usuario')
     
@@ -189,10 +184,8 @@ def admin_reprovar_reserva(id):
     
     return redirect(url_for('reserva.admin_listar_pendentes'))
 
-
 @reserva_bp.route('/admin/reservas/cancelar/<int:id>', methods=['POST'])
 def admin_cancelar_reserva(id):
-    
     
     tipo_usuario = session.get('tipo_usuario')
     

@@ -27,7 +27,6 @@ def ver_aviso(id):
 def admin_listar_avisos():
     aviso_model = Aviso()
     avisos = aviso_model.listar_todos()
-    
     return render_template('admin/avisos/listar.html', avisos=avisos)
 
 
