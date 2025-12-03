@@ -1,434 +1,349 @@
+# models/horario.py
 from database.conexao import conectar
 
-class Equipamento:
+class Horario:
+    """
+    Model de Horário
+    Gerencia os horários das turmas
+    """
     
     def __init__(self):
         pass
     
-    def listar_todos(self):
+    # ========================================
+    # MÉTODOS DE LISTAGEM E BUSCA
+    # ========================================
+    
+    def listar_por_turma(self, id_turma):
+        """Lista todos os horários de uma turma"""
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
             
             query = """
-                SELECT id, nome, tipo, ativo 
-                FROM equipamentos 
-                ORDER BY tipo, nome
+                SELECT 
+                    h.id,
+                    h.dia_semana,
+                    h.horario_inicio,
+                    h.horario_fim,
+                    h.id_turma,
+                    h.id_professor,
+                    h.id_disciplina,
+                    h.id_sala,
+                    t.nome as turma_nome,
+                    p.nome as professor_nome,
+                    d.nome as disciplina_nome,
+                    s.nome as sala_nome
+                FROM horarios h
+                INNER JOIN turmas t ON h.id_turma = t.id
+                INNER JOIN professores p ON h.id_professor = p.id
+                INNER JOIN disciplinas d ON h.id_disciplina = d.id
+                LEFT JOIN salas s ON h.id_sala = s.id
+                WHERE h.id_turma = %s
+                ORDER BY 
+                    FIELD(h.dia_semana, 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'),
+                    h.horario_inicio
             """
+            cursor.execute(query, (id_turma,))
+            horarios = cursor.fetchall()
             
-            cursor.execute(query)
-            equipamentos = cursor.fetchall()
             cursor.close()
             conexao.close()
             
-            return equipamentos
+            return horarios
             
         except Exception as e:
-            print(f"Erro ao listar equipamentos: {e}")
+            print(f"Erro ao listar horários da turma: {e}")
             return []
     
-    def listar_ativos(self):
+    def listar_por_professor(self, id_professor):
+        """Lista todos os horários de um professor"""
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
             
             query = """
-                SELECT id, nome, tipo 
-                FROM equipamentos 
-                WHERE ativo = TRUE 
-                ORDER BY tipo, nome
+                SELECT 
+                    h.id,
+                    h.dia_semana,
+                    h.horario_inicio,
+                    h.horario_fim,
+                    t.nome as turma_nome,
+                    d.nome as disciplina_nome,
+                    s.nome as sala_nome
+                FROM horarios h
+                INNER JOIN turmas t ON h.id_turma = t.id
+                INNER JOIN disciplinas d ON h.id_disciplina = d.id
+                LEFT JOIN salas s ON h.id_sala = s.id
+                WHERE h.id_professor = %s
+                ORDER BY 
+                    FIELD(h.dia_semana, 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'),
+                    h.horario_inicio
             """
-            cursor.execute(query)
-            equipamentos = cursor.fetchall()
+            cursor.execute(query, (id_professor,))
+            horarios = cursor.fetchall()
             
             cursor.close()
             conexao.close()
             
-            return equipamentos
+            return horarios
             
         except Exception as e:
-            print(f"Erro ao listar equipamentos ativos: {e}")
+            print(f"Erro ao listar horários do professor: {e}")
             return []
     
-    def listar_por_tipo(self, tipo):
+    def buscar_por_id(self, id_horario):
+        """Busca um horário específico"""
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
             
             query = """
-                SELECT id, nome, tipo 
-                FROM equipamentos 
-                WHERE tipo = %s AND ativo = TRUE 
-                ORDER BY nome
+                SELECT 
+                    h.*,
+                    t.nome as turma_nome,
+                    p.nome as professor_nome,
+                    d.nome as disciplina_nome,
+                    s.nome as sala_nome
+                FROM horarios h
+                INNER JOIN turmas t ON h.id_turma = t.id
+                INNER JOIN professores p ON h.id_professor = p.id
+                INNER JOIN disciplinas d ON h.id_disciplina = d.id
+                LEFT JOIN salas s ON h.id_sala = s.id
+                WHERE h.id = %s
             """
+            cursor.execute(query, (id_horario,))
+            horario = cursor.fetchone()
             
-            cursor.execute(query, (tipo,))
-            equipamentos = cursor.fetchall() 
             cursor.close()
             conexao.close()
             
-            return equipamentos
+            return horario
             
         except Exception as e:
-            print(f"Erro ao listar equipamentos por tipo: {e}")
-            return []
-    
-    def buscar_por_id(self, id_equipamento):
-        try:
-            conexao = conectar()
-            cursor = conexao.cursor(dictionary=True)
-            
-            query = """
-                SELECT id, nome, tipo, ativo 
-                FROM equipamentos 
-                WHERE id = %s
-            """
-            cursor.execute(query, (id_equipamento,))
-            equipamento = cursor.fetchone()
-            cursor.close()
-            conexao.close()
-            
-            return equipamento
-            
-        except Exception as e:
-            print(f"Erro ao buscar equipamento: {e}")
+            print(f"Erro ao buscar horário: {e}")
             return None
     
-    def buscar_por_nome(self, nome):
+    # ========================================
+    # MÉTODOS DE VERIFICAÇÃO DE CONFLITOS
+    # ========================================
+    
+    def verificar_conflito_professor(self, id_professor, dia_semana, horario_inicio, horario_fim, id_horario_excluir=None):
+        """Verifica se professor já tem aula nesse horário"""
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
             
             query = """
-                SELECT id, nome, tipo, ativo 
-                FROM equipamentos 
-                WHERE nome = %s
-            """
-            
-            cursor.execute(query, (nome,))
-            equipamento = cursor.fetchone()
-            cursor.close()
-            conexao.close()
-            
-            return equipamento
-            
-        except Exception as e:
-            print(f"Erro ao buscar equipamento por nome: {e}")
-            return None
-    
-    
-    def contar_total(self, apenas_ativos=False):
-        try:
-            conexao = conectar()
-            cursor = conexao.cursor(dictionary=True)
-            
-            if apenas_ativos:
-                query = "SELECT COUNT(*) as total FROM equipamentos WHERE ativo = TRUE"
-            else:
-                query = "SELECT COUNT(*) as total FROM equipamentos"
-            
-            cursor.execute(query)
-            resultado = cursor.fetchone()
-            cursor.close()
-            conexao.close()
-            
-            return resultado['total'] if resultado else 0
-            
-        except Exception as e:
-            print(f"Erro ao contar equipamentos: {e}")
-            return 0
-    
-    
-    def contar_por_tipo(self):
-        try:
-            conexao = conectar()
-            cursor = conexao.cursor(dictionary=True)
-            
-            query = """
-                SELECT tipo, COUNT(*) as total 
-                FROM equipamentos 
-                WHERE ativo = TRUE 
-                GROUP BY tipo
-            """
-            
-            cursor.execute(query)
-            resultados = cursor.fetchall()
-            cursor.close()
-            conexao.close()
-            contagem = {}
-            
-            for resultado in resultados:
-                contagem[resultado['tipo']] = resultado['total']
-            
-            return contagem
-            
-        except Exception as e:
-            print(f"Erro ao contar por tipo: {e}")
-            return {}
-    
-    
-    def verificar_disponibilidade(self, id_equipamento, data, horario_inicio, horario_fim, id_reserva_atual=None):
-        try:
-            conexao = conectar()
-            cursor = conexao.cursor(dictionary=True)
-            
-            query = """
-                SELECT id 
-                FROM reservas 
-                WHERE id_equipamento = %s 
-                AND data = %s
-                AND status IN ('pendente', 'aprovada')
+                SELECT id FROM horarios
+                WHERE id_professor = %s
+                AND dia_semana = %s
                 AND (
                     (horario_inicio < %s AND horario_fim > %s)
                     OR (horario_inicio < %s AND horario_fim > %s)
                     OR (horario_inicio >= %s AND horario_fim <= %s)
                 )
             """
-            parametros = [
-                id_equipamento, data,
+            
+            params = [
+                id_professor, dia_semana,
                 horario_fim, horario_inicio,
                 horario_fim, horario_inicio,
                 horario_inicio, horario_fim
             ]
             
-            if id_reserva_atual:
+            # Se estiver editando, exclui o próprio horário da verificação
+            if id_horario_excluir:
                 query += " AND id != %s"
-                parametros.append(id_reserva_atual)
-            cursor.execute(query, tuple(parametros))
-            conflitos = cursor.fetchall()
+                params.append(id_horario_excluir)
+            
+            cursor.execute(query, params)
+            conflito = cursor.fetchone()
+            
             cursor.close()
             conexao.close()
             
-            return len(conflitos) == 0
+            return conflito is not None
             
         except Exception as e:
-            print(f"Erro ao verificar disponibilidade: {e}")
-            return False
+            print(f"Erro ao verificar conflito de professor: {e}")
+            return True  # Em caso de erro, considera que há conflito
     
-    
-    def buscar_reservas(self, id_equipamento, limite=10):
+    def verificar_conflito_sala(self, id_sala, dia_semana, horario_inicio, horario_fim, id_horario_excluir=None):
+        """Verifica se sala já está ocupada nesse horário"""
+        if not id_sala:
+            return False  # Sem sala, sem conflito
+        
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
             
             query = """
-                SELECT 
-                    r.id,
-                    r.data,
-                    r.horario_inicio,
-                    r.horario_fim,
-                    r.finalidade,
-                    r.status,
-                    p.nome as professor_nome
-                FROM reservas r
-                INNER JOIN professores p ON r.id_professor = p.id
-                WHERE r.id_equipamento = %s
-                ORDER BY r.data DESC, r.horario_inicio DESC
-                LIMIT %s
+                SELECT id FROM horarios
+                WHERE id_sala = %s
+                AND dia_semana = %s
+                AND (
+                    (horario_inicio < %s AND horario_fim > %s)
+                    OR (horario_inicio < %s AND horario_fim > %s)
+                    OR (horario_inicio >= %s AND horario_fim <= %s)
+                )
             """
-
-            cursor.execute(query, (id_equipamento, limite))
-            reservas = cursor.fetchall()
+            
+            params = [
+                id_sala, dia_semana,
+                horario_fim, horario_inicio,
+                horario_fim, horario_inicio,
+                horario_inicio, horario_fim
+            ]
+            
+            if id_horario_excluir:
+                query += " AND id != %s"
+                params.append(id_horario_excluir)
+            
+            cursor.execute(query, params)
+            conflito = cursor.fetchone()
+            
             cursor.close()
             conexao.close()
             
-            return reservas
+            return conflito is not None
             
         except Exception as e:
-            print(f"Erro ao buscar reservas do equipamento: {e}")
-            return []
+            print(f"Erro ao verificar conflito de sala: {e}")
+            return True
     
-    
-    def verificar_em_uso(self, id_equipamento):
+    def verificar_conflito_turma(self, id_turma, dia_semana, horario_inicio, horario_fim, id_horario_excluir=None):
+        """Verifica se turma já tem aula nesse horário"""
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
-            cursor.execute(
-                "SELECT COUNT(*) as total FROM reservas WHERE id_equipamento = %s AND status IN ('pendente', 'aprovada')",
-                (id_equipamento,)
-            )
-            tem_reservas = cursor.fetchone()['total'] > 0
+            
+            query = """
+                SELECT id FROM horarios
+                WHERE id_turma = %s
+                AND dia_semana = %s
+                AND (
+                    (horario_inicio < %s AND horario_fim > %s)
+                    OR (horario_inicio < %s AND horario_fim > %s)
+                    OR (horario_inicio >= %s AND horario_fim <= %s)
+                )
+            """
+            
+            params = [
+                id_turma, dia_semana,
+                horario_fim, horario_inicio,
+                horario_fim, horario_inicio,
+                horario_inicio, horario_fim
+            ]
+            
+            if id_horario_excluir:
+                query += " AND id != %s"
+                params.append(id_horario_excluir)
+            
+            cursor.execute(query, params)
+            conflito = cursor.fetchone()
+            
             cursor.close()
             conexao.close()
             
-            return tem_reservas
+            return conflito is not None
             
         except Exception as e:
-            print(f"Erro ao verificar uso do equipamento: {e}")
+            print(f"Erro ao verificar conflito de turma: {e}")
             return True
     
+    # ========================================
+    # MÉTODOS DE CRIAÇÃO E ATUALIZAÇÃO
+    # ========================================
     
-    def criar(self, nome, tipo):
+    def criar(self, id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala=None):
+        """Cria um novo horário (com verificação de conflitos)"""
         try:
-            if not nome or not nome.strip():
-                print("Erro: Nome do equipamento não pode estar vazio")
-                return False
+            # Verifica conflitos
+            if self.verificar_conflito_professor(id_professor, dia_semana, horario_inicio, horario_fim):
+                return False, "Professor já tem aula nesse horário"
             
-            if not tipo or not tipo.strip():
-                print("Erro: Tipo do equipamento não pode estar vazio")
-                return False
+            if self.verificar_conflito_sala(id_sala, dia_semana, horario_inicio, horario_fim):
+                return False, "Sala já está ocupada nesse horário"
             
-            nome = nome.strip()
-            tipo = tipo.strip()
+            if self.verificar_conflito_turma(id_turma, dia_semana, horario_inicio, horario_fim):
+                return False, "Turma já tem aula nesse horário"
             
-            equipamento_existente = self.buscar_por_nome(nome)
-            if equipamento_existente:
-                print(f"Erro: Equipamento '{nome}' já existe")
-                return False
-            
+            # Cria horário
             conexao = conectar()
             cursor = conexao.cursor()
             
             query = """
-                INSERT INTO equipamentos (nome, tipo) 
-                VALUES (%s, %s)
+                INSERT INTO horarios 
+                (id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-
-            cursor.execute(query, (nome, tipo))
+            cursor.execute(query, (id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala))
             conexao.commit()
+            
             cursor.close()
             conexao.close()
             
-            return True
+            return True, "Horário criado com sucesso"
             
         except Exception as e:
-            print(f"Erro ao criar equipamento: {e}")
-            return False
+            print(f"Erro ao criar horário: {e}")
+            return False, "Erro ao criar horário"
     
-    
-    def editar(self, id_equipamento, nome, tipo):
+    def editar(self, id_horario, id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala=None):
+        """Edita um horário existente"""
         try:
-            if not nome or not nome.strip():
-                print("Erro: Nome do equipamento não pode estar vazio")
-                return False
+            # Verifica conflitos (excluindo o próprio horário)
+            if self.verificar_conflito_professor(id_professor, dia_semana, horario_inicio, horario_fim, id_horario):
+                return False, "Professor já tem aula nesse horário"
             
-            if not tipo or not tipo.strip():
-                print("Erro: Tipo do equipamento não pode estar vazio")
-                return False
+            if self.verificar_conflito_sala(id_sala, dia_semana, horario_inicio, horario_fim, id_horario):
+                return False, "Sala já está ocupada nesse horário"
             
-            nome = nome.strip()
-            tipo = tipo.strip()
+            if self.verificar_conflito_turma(id_turma, dia_semana, horario_inicio, horario_fim, id_horario):
+                return False, "Turma já tem aula nesse horário"
             
-            equipamento_existente = self.buscar_por_nome(nome)
-            if equipamento_existente and equipamento_existente['id'] != id_equipamento:
-                print(f"Erro: Já existe outro equipamento chamado '{nome}'")
-                return False
-            
+            # Atualiza horário
             conexao = conectar()
             cursor = conexao.cursor()
             
             query = """
-                UPDATE equipamentos 
-                SET nome = %s, tipo = %s 
+                UPDATE horarios 
+                SET id_turma = %s, dia_semana = %s, horario_inicio = %s, horario_fim = %s, 
+                    id_professor = %s, id_disciplina = %s, id_sala = %s
                 WHERE id = %s
             """
-            
-            cursor.execute(query, (nome, tipo, id_equipamento))
+            cursor.execute(query, (id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala, id_horario))
             conexao.commit()
+            
             cursor.close()
             conexao.close()
             
-            return True
+            return True, "Horário editado com sucesso"
             
         except Exception as e:
-            print(f"Erro ao editar equipamento: {e}")
-            return False
+            print(f"Erro ao editar horário: {e}")
+            return False, "Erro ao editar horário"
     
+    # ========================================
+    # MÉTODOS DE DELEÇÃO
+    # ========================================
     
-    def ativar(self, id_equipamento):
+    def deletar(self, id_horario):
+        """Deleta um horário"""
         try:
             conexao = conectar()
             cursor = conexao.cursor()
-            query = "UPDATE equipamentos SET ativo = TRUE WHERE id = %s"
-            cursor.execute(query, (id_equipamento,))
+            
+            query = "DELETE FROM horarios WHERE id = %s"
+            cursor.execute(query, (id_horario,))
             conexao.commit()
+            
             cursor.close()
             conexao.close()
             
             return True
             
         except Exception as e:
-            print(f"Erro ao ativar equipamento: {e}")
+            print(f"Erro ao deletar horário: {e}")
             return False
-    
-    
-    def desativar(self, id_equipamento):
-        try:
-            conexao = conectar()
-            cursor = conexao.cursor()
-            query = "UPDATE equipamentos SET ativo = FALSE WHERE id = %s"
-            cursor.execute(query, (id_equipamento,))
-            conexao.commit()
-            cursor.close()
-            conexao.close()
-            
-            return True
-            
-        except Exception as e:
-            print(f"Erro ao desativar equipamento: {e}")
-            return False
-    
-    def deletar(self, id_equipamento):
-        try:
-            if self.verificar_em_uso(id_equipamento):
-                print("Erro: Não é possível deletar equipamento que está em uso!")
-                print("Cancele as reservas primeiro.")
-                return False
-            
-            conexao = conectar()
-            cursor = conexao.cursor()   
-            cursor.execute("DELETE FROM reservas WHERE id_equipamento = %s AND status = 'cancelada'", (id_equipamento,)) 
-            cursor.execute("DELETE FROM equipamentos WHERE id = %s", (id_equipamento,))
-            conexao.commit()
-            cursor.close()
-            conexao.close()
-            
-            return True
-            
-        except Exception as e:
-            print(f"Erro ao deletar equipamento: {e}")
-            return False
-    
-    def buscar_com_estatisticas(self):
-        try:
-            conexao = conectar()
-            cursor = conexao.cursor(dictionary=True)
-            
-            query = """
-                SELECT 
-                    e.id,
-                    e.nome,
-                    e.tipo,
-                    e.ativo,
-                    COUNT(DISTINCT r.id) as total_reservas
-                FROM equipamentos e
-                LEFT JOIN reservas r ON e.id = r.id_equipamento AND r.status IN ('pendente', 'aprovada')
-                GROUP BY e.id, e.nome, e.tipo, e.ativo
-                ORDER BY e.tipo, e.nome
-            """
-
-            cursor.execute(query)
-            equipamentos = cursor.fetchall()
-            cursor.close()
-            conexao.close()
-            
-            return equipamentos
-            
-        except Exception as e:
-            print(f"Erro ao buscar equipamentos com estatísticas: {e}")
-            return []
-    
-    
-    def buscar_detalhes_completos(self, id_equipamento):
-        try:
-            equipamento = self.buscar_por_id(id_equipamento)
-
-            if not equipamento:
-                return None
-            equipamento['reservas'] = self.buscar_reservas(id_equipamento, limite=20)
-            equipamento['total_reservas'] = len(equipamento['reservas'])
-            
-            return equipamento 
-        except Exception as e:
-            print(f"Erro ao buscar detalhes completos do equipamento: {e}")
-            return None

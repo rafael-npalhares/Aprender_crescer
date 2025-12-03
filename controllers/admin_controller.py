@@ -178,3 +178,14 @@ def alterar_senha():
         flash('Senha atual incorreta!', 'error')
     
     return redirect(url_for('admin.perfil'))
+
+def relatorios():
+    if session.get('usuario_tipo') != 'administrador':
+        flash('Acesso negado!', 'error')
+        return redirect(url_for('auth.login_page'))
+    
+    admin_model = Administrador()
+    estatisticas = admin_model.obter_estatisticas_sistema()
+    
+    return render_template('admin/relatorios.html', 
+                         estatisticas=estatisticas)
