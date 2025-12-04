@@ -1,0 +1,17 @@
+{% extends "layouts/base_admin.html" %}
+{% block admin_content %}
+  <h2>Meu Perfil</h2>
+  <form action="{{ url_for('admin.editar_perfil') }}" method="post">
+    <label>Nome<input name="nome" value="{{ admin.nome }}"></label>
+    <label>Email<input name="email" value="{{ admin.email }}"></label>
+    <button type="submit">Salvar</button>
+  </form>
+
+  <h3>Alterar Senha</h3>
+  <form action="{{ url_for('admin.alterar_senha') }}" method="post">
+    <label>Senha atual<input type="password" name="senha_atual"></label>
+    <label>Nova senha<input type="password" name="nova_senha"></label>
+    <label>Confirmar senha<input type="password" name="confirmar_senha"></label>
+    <button type="submit">Alterar senha</button>
+  </form>
+{% endblock %}

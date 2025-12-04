@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ aviso.titulo }} - Aprender & Crescer{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 2rem; max-width: 800px;">
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                {% if aviso.fixado %}
+                    <span class="badge badge-warning">📌 Fixado</span>
+                {% endif %}
+                <span class="badge badge-info">{{ aviso.tipo|capitalize }}</span>
+            </div>
+            
+            <h3 style="color: var(--primary);">{{ aviso.titulo }}</h3>
+        </div>
+
+        <div style="padding: 1.5rem; background: var(--light); border-radius: 0.5rem; margin-bottom: 1.5rem;">
+            <p style="white-space: pre-wrap; line-height: 1.8; color: var(--dark);">{{ aviso.descricao }}</p>
+        </div>
+
+        <div style="padding-top: 1rem; border-top: 1px solid var(--border);">
+            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.875rem; color: var(--secondary);">
+                <div>
+                    <strong>Publicado em:</strong>
+                    <span>{{ aviso.data_postagem|data_hora_br }}</span>
+                </div>
+                
+                {% if aviso.data_expiracao %}
+                    <div>
+                        <strong>Expira em:</strong>
+                        <span>{{ aviso.data_expiracao|data_br }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('aviso.listar_avisos') }}" class="btn btn-secondary">
+                ← Voltar aos avisos
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

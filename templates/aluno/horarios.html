@@ -1,38 +1,18 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Horários - Aluno</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card"><div><strong>Horários</strong></div></div>
+{% extends "layouts/base_aluno.html" %}
+{% block title %}Meus Horários{% endblock %}
+{% block aluno_content %}
+  <h2>Horários da Turma {{ turma.nome if turma else '' }}</h2>
 
-    <div class="app" style="margin-top:16px;">
-      <div class="sidebar card">
-        <h3>Aluno</h3>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="avisos.html">Avisos</a>
-        <a href="horarios.html">Horários</a>
-      </div>
-
-      <div class="main">
-        <div class="card">
-          <h2>Horários</h2>
-          <table class="table">
-            <thead><tr><th>Dia</th><th>Disciplina</th><th>Professor</th></tr></thead>
-            <tbody>
-              <tr><td>Segunda</td><td>Matemática</td><td>Rafael</td></tr>
-              <tr><td>Terça</td><td>Português</td><td>Ana</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
-  </div>
-</body>
-</html>
+  {% for dia, lista in horarios_organizados.items() %}
+    <h3>{{ dia | nome_dia }}</h3>
+    {% if lista %}
+      <ul>
+        {% for h in lista %}
+          <li>{{ h.horario_inicio | hora_br }} - {{ h.horario_fim | hora_br }}: {{ h.disciplina_nome }} ({{ h.professor_nome }}) - {{ h.sala_nome or '-' }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Nenhuma aula.</p>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

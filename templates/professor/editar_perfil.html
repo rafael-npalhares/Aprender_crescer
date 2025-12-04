@@ -1,0 +1,10 @@
+{% extends "layouts/base_professor.html" %}
+{% block professor_content %}
+  <h2>Editar Perfil</h2>
+  <form action="{{ url_for('professor.editar_perfil') }}" method="post" class="form">
+    <label>Nome<input name="nome" value="{{ professor.nome }}" required></label>
+    <label>Email<input name="email" value="{{ professor.email }}" required></label>
+    <label>Especialidade<input name="especialidade" value="{{ professor.especialidade }}" required></label>
+    <button type="submit">Salvar</button>
+  </form>
+{% endblock %}

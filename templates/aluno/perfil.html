@@ -1,0 +1,10 @@
+{% extends "layouts/base_aluno.html" %}
+{% block title %}Perfil do Aluno{% endblock %}
+{% block aluno_content %}
+  <h2>Meu Perfil</h2>
+  <p><strong>Nome:</strong> {{ aluno.nome }}</p>
+  <p><strong>Email:</strong> {{ aluno.email }}</p>
+  <p><strong>Turma:</strong> {{ turma.nome if turma else 'Sem turma' }}</p>
+
+  <a href="{{ url_for('aluno.form_editar_perfil') }}">Editar perfil</a>
+{% endblock %}

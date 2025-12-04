@@ -1,21 +1,12 @@
-# models/horario.py
 from database.conexao import conectar
 
 class Horario:
-    """
-    Model de Horário
-    Gerencia os horários das turmas
-    """
-    
+ 
     def __init__(self):
         pass
-    
-    # ========================================
-    # MÉTODOS DE LISTAGEM E BUSCA
-    # ========================================
-    
+
     def listar_por_turma(self, id_turma):
-        """Lista todos os horários de uma turma"""
+
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
@@ -46,7 +37,6 @@ class Horario:
             """
             cursor.execute(query, (id_turma,))
             horarios = cursor.fetchall()
-            
             cursor.close()
             conexao.close()
             
@@ -57,7 +47,7 @@ class Horario:
             return []
     
     def listar_por_professor(self, id_professor):
-        """Lista todos os horários de um professor"""
+
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
@@ -93,7 +83,7 @@ class Horario:
             return []
     
     def buscar_por_id(self, id_horario):
-        """Busca um horário específico"""
+  
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
@@ -114,7 +104,6 @@ class Horario:
             """
             cursor.execute(query, (id_horario,))
             horario = cursor.fetchone()
-            
             cursor.close()
             conexao.close()
             
@@ -123,13 +112,10 @@ class Horario:
         except Exception as e:
             print(f"Erro ao buscar horário: {e}")
             return None
-    
-    # ========================================
-    # MÉTODOS DE VERIFICAÇÃO DE CONFLITOS
-    # ========================================
+ 
     
     def verificar_conflito_professor(self, id_professor, dia_semana, horario_inicio, horario_fim, id_horario_excluir=None):
-        """Verifica se professor já tem aula nesse horário"""
+
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
@@ -152,14 +138,13 @@ class Horario:
                 horario_inicio, horario_fim
             ]
             
-            # Se estiver editando, exclui o próprio horário da verificação
+
             if id_horario_excluir:
                 query += " AND id != %s"
                 params.append(id_horario_excluir)
             
             cursor.execute(query, params)
             conflito = cursor.fetchone()
-            
             cursor.close()
             conexao.close()
             
@@ -170,9 +155,9 @@ class Horario:
             return True  # Em caso de erro, considera que há conflito
     
     def verificar_conflito_sala(self, id_sala, dia_semana, horario_inicio, horario_fim, id_horario_excluir=None):
-        """Verifica se sala já está ocupada nesse horário"""
+      
         if not id_sala:
-            return False  # Sem sala, sem conflito
+            return False 
         
         try:
             conexao = conectar()
@@ -202,7 +187,6 @@ class Horario:
             
             cursor.execute(query, params)
             conflito = cursor.fetchone()
-            
             cursor.close()
             conexao.close()
             
@@ -213,7 +197,7 @@ class Horario:
             return True
     
     def verificar_conflito_turma(self, id_turma, dia_semana, horario_inicio, horario_fim, id_horario_excluir=None):
-        """Verifica se turma já tem aula nesse horário"""
+       
         try:
             conexao = conectar()
             cursor = conexao.cursor(dictionary=True)
@@ -242,7 +226,6 @@ class Horario:
             
             cursor.execute(query, params)
             conflito = cursor.fetchone()
-            
             cursor.close()
             conexao.close()
             
@@ -251,15 +234,11 @@ class Horario:
         except Exception as e:
             print(f"Erro ao verificar conflito de turma: {e}")
             return True
-    
-    # ========================================
-    # MÉTODOS DE CRIAÇÃO E ATUALIZAÇÃO
-    # ========================================
-    
+
     def criar(self, id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala=None):
-        """Cria um novo horário (com verificação de conflitos)"""
+        
         try:
-            # Verifica conflitos
+  
             if self.verificar_conflito_professor(id_professor, dia_semana, horario_inicio, horario_fim):
                 return False, "Professor já tem aula nesse horário"
             
@@ -269,7 +248,7 @@ class Horario:
             if self.verificar_conflito_turma(id_turma, dia_semana, horario_inicio, horario_fim):
                 return False, "Turma já tem aula nesse horário"
             
-            # Cria horário
+      
             conexao = conectar()
             cursor = conexao.cursor()
             
@@ -280,7 +259,6 @@ class Horario:
             """
             cursor.execute(query, (id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala))
             conexao.commit()
-            
             cursor.close()
             conexao.close()
             
@@ -291,9 +269,9 @@ class Horario:
             return False, "Erro ao criar horário"
     
     def editar(self, id_horario, id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala=None):
-        """Edita um horário existente"""
+    
         try:
-            # Verifica conflitos (excluindo o próprio horário)
+    
             if self.verificar_conflito_professor(id_professor, dia_semana, horario_inicio, horario_fim, id_horario):
                 return False, "Professor já tem aula nesse horário"
             
@@ -303,7 +281,7 @@ class Horario:
             if self.verificar_conflito_turma(id_turma, dia_semana, horario_inicio, horario_fim, id_horario):
                 return False, "Turma já tem aula nesse horário"
             
-            # Atualiza horário
+          
             conexao = conectar()
             cursor = conexao.cursor()
             
@@ -315,7 +293,6 @@ class Horario:
             """
             cursor.execute(query, (id_turma, dia_semana, horario_inicio, horario_fim, id_professor, id_disciplina, id_sala, id_horario))
             conexao.commit()
-            
             cursor.close()
             conexao.close()
             
@@ -324,21 +301,15 @@ class Horario:
         except Exception as e:
             print(f"Erro ao editar horário: {e}")
             return False, "Erro ao editar horário"
-    
-    # ========================================
-    # MÉTODOS DE DELEÇÃO
-    # ========================================
-    
+
     def deletar(self, id_horario):
-        """Deleta um horário"""
+        
         try:
             conexao = conectar()
             cursor = conexao.cursor()
-            
             query = "DELETE FROM horarios WHERE id = %s"
             cursor.execute(query, (id_horario,))
             conexao.commit()
-            
             cursor.close()
             conexao.close()
             

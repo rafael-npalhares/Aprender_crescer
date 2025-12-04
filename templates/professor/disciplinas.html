@@ -1,0 +1,11 @@
+{% extends "layouts/base_professor.html" %}
+{% block professor_content %}
+  <h2>Minhas Disciplinas</h2>
+  <ul>
+    {% for d in disciplinas %}
+      <li>{{ d.nome }}</li>
+    {% else %}
+      <li>Sem disciplinas.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -23,7 +23,7 @@ def dashboard():
    
 @admin_bp.route('/admin/alunos')
 def listar_alunos():
-    if session.get['usuario_tipo'] != 'administrador':
+    if session.get('usuario_tipo') != 'administrador':
         flash('Acesso negado! Área restrita a administradores.', 'error') 
         return redirect(url_for('auth.login_page'))
     
@@ -32,7 +32,7 @@ def listar_alunos():
 
 @admin_bp.route('/admin/alunos/criar', methods=['POST'])
 def criar_aluno():
-    if session.get['usuario_tipo'] != 'administrador':
+    if session.get('usuario_tipo') != 'administrador':
         flash('Acesso negado! Área restrita a administradores.', 'error') 
         return redirect(url_for('auth.login_page'))
     

@@ -1,27 +1,11 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Selecionar Perfil</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card"><div><strong>Selecionar Perfil</strong></div></div>
-
-    <div style="max-width:720px;margin:18px auto">
-      <div class="card">
-        <h2>Escolha seu perfil</h2>
-        <div class="grid">
-          <a class="card" href="/aluno/dashboard.html">Entrar como Aluno</a>
-          <a class="card" href="/professor/dashboard.html">Entrar como Professor</a>
-          <a class="card" href="/admin/dashboard.html">Entrar como Admin</a>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
-  </div>
-</body>
-</html>
+{% extends "layouts/base.html" %}
+{% block title %}Selecionar Perfil{% endblock %}
+{% block content %}
+  <h2>Selecionar Tipo de Conta</h2>
+  <p>Escolha o seu perfil para começar.</p>
+  <ul>
+    <li><a href="{{ url_for('auth.registro_aluno_page') }}">Aluno</a></li>
+    <li><a href="{{ url_for('auth.registro_professor_page') }}">Professor</a></li>
+    <li><a href="{{ url_for('auth.registro_admin_page') }}">Administrador</a></li>
+  </ul>
+{% endblock %}

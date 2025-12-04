@@ -1,0 +1,31 @@
+{% extends "layouts/base.html" %}
+{% block title %}Minhas Reservas{% endblock %}
+{% block content %}
+  <h2>Minhas Reservas</h2>
+  <a class="btn" href="{{ url_for('reserva.form_nova_reserva') }}">Nova Reserva</a>
+
+  <table class="table">
+    <thead><tr><th>Tipo</th><th>Data</th><th>Início</th><th>Fim</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>
+      {% for r in reservas %}
+        <tr>
+          <td>{{ r.tipo }}</td>
+          <td>{{ r.data | data_br }}</td>
+          <td>{{ r.horario_inicio | hora_br }}</td>
+          <td>{{ r.horario_fim | hora_br }}</td>
+          <td>{{ r.status }}</td>
+          <td>
+            <a href="{{ url_for('reserva.ver_reserva', id=r.id) }}">Ver</a>
+            {% if r.status == 'pendente' %}
+              <form action="{{ url_for('reserva.cancelar_reserva', id=r.id) }}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Cancelar reserva?')">Cancelar</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">Nenhuma reserva.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

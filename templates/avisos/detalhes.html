@@ -1,0 +1,9 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ aviso.titulo }}{% endblock %}
+{% block content %}
+  <article class="aviso-detalhe">
+    <h2>{{ aviso.titulo }}</h2>
+    <p class="muted">{{ aviso.data_postagem | data_hora_br }}</p>
+    <div class="descricao">{{ aviso.descricao | safe }}</div>
+  </article>
+{% endblock %}

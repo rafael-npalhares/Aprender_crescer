@@ -1,33 +1,31 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dashboard - Professor</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card"><div><strong>Dashboard Professor</strong></div></div>
+{% extends "base.html" %}
 
-    <div class="app" style="margin-top:16px;">
-      <div class="sidebar card">
-        <h3>Professor</h3>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="horarios.html">Horários</a>
-        <a href="minhas_reservas.html">Minhas Reservas</a>
-        <a href="reservas.html">Reservas</a>
-      </div>
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Painel do Professor - {{ professor.nome }}</h1>
+    <a href="{{ url_for('reserva.nova_reserva') }}" class="btn">Nova Reserva de Sala/Equipamento</a>
+</div>
 
-      <div class="main">
-        <div class="card">
-          <h2>Atividades recentes</h2>
-          <p>Próximas aulas e notificações.</p>
-        </div>
-      </div>
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>📚 Minhas Turmas</h3>
+        {% if turmas %}
+            <ul style="padding-left: 20px;">
+            {% for turma in turmas %}
+                <li>{{ turma.nome }} - {{ turma.disciplina }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma turma atribuída no momento.</p>
+        {% endif %}
     </div>
 
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
-  </div>
-</body>
-</html>
+    <div class="card">
+        <h3>Acesso Rápido</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 10px;"><a href="{{ url_for('aviso.criar_aviso') }}">📢 Publicar Aviso para Alunos</a></li>
+            <li><a href="{{ url_for('reserva.nova_reserva') }}">📅 Reservar Projetor/Laboratório</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

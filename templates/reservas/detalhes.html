@@ -1,0 +1,13 @@
+{% extends "layouts/base.html" %}
+{% block title %}Detalhes da Reserva{% endblock %}
+{% block content %}
+  <h2>Reserva #{{ reserva.id }}</h2>
+  <ul>
+    <li>Tipo: {{ reserva.tipo }}</li>
+    <li>Data: {{ reserva.data | data_br }}</li>
+    <li>Início: {{ reserva.horario_inicio | hora_br }}</li>
+    <li>Fim: {{ reserva.horario_fim | hora_br }}</li>
+    <li>Finalidade: {{ reserva.finalidade }}</li>
+    <li>Status: {{ reserva.status }}</li>
+  </ul>
+{% endblock %}

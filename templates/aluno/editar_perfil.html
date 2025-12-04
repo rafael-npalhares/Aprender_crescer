@@ -1,0 +1,10 @@
+{% extends "layouts/base_aluno.html" %}
+{% block title %}Editar Perfil{% endblock %}
+{% block aluno_content %}
+  <h2>Editar Perfil</h2>
+  <form action="{{ url_for('aluno.editar_perfil') }}" method="post" class="form">
+    <label>Nome<input name="nome" value="{{ aluno.nome }}" required></label>
+    <label>Email<input name="email" type="email" value="{{ aluno.email }}" required></label>
+    <button type="submit">Salvar</button>
+  </form>
+{% endblock %}

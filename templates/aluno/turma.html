@@ -1,0 +1,13 @@
+{% extends "layouts/base_aluno.html" %}
+{% block title %}Minha Turma{% endblock %}
+{% block aluno_content %}
+  <h2>Turma {{ turma.nome }}</h2>
+  <h3>Colegas</h3>
+  <ul>
+    {% for c in colegas %}
+      <li>{{ c.nome }} - {{ c.email }}</li>
+    {% else %}
+      <li>Sem colegas listados.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,35 +1,25 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Avisos - Aluno</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card"><div><strong>Avisos</strong></div></div>
+{% extends 'layouts/base_aluno.html' %}
 
-    <div class="app" style="margin-top:16px;">
-      <div class="sidebar card">
-        <h3>Aluno</h3>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="avisos.html">Avisos</a>
-        <a href="horarios.html">Horários</a>
-      </div>
+{% block title %}Avisos{% endblock %}
 
-      <div class="main">
-        <div class="card">
-          <h2>Avisos</h2>
-          <ul>
-            <li><strong>Recesso</strong> - <span class="small">2025-12-20</span><p>As aulas retornam em 2026-01-10.</p></li>
-            <li><strong>Prova</strong> - <span class="small">2025-11-29</span><p>Prova de matemática na sexta.</p></li>
-          </ul>
+{% block content %}
+<h1 class="mb-4">📢 Avisos da Escola</h1>
+
+{% if avisos %}
+    {% for aviso in avisos %}
+    <div class="card mb-3">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>{% if aviso.fixado %}📌 {% endif %}{{ aviso.titulo }}</h3>
+            <span class="badge badge-info">{{ aviso.tipo|capitalize }}</span>
         </div>
-      </div>
+        <div class="card-body">
+            <p style="color: #6b7280; margin-bottom: 1rem;">📅 {{ aviso.data_postagem|data_br }}</p>
+            <p>{{ aviso.descricao[:150] }}{% if aviso.descricao|length > 150 %}...{% endif %}</p>
+            <a href="#" class="btn btn-sm btn-primary">Ler mais</a>
+        </div>
     </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
-  </div>
-</body>
-</html>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">Nenhum aviso disponível no momento.</div>
+{% endif %}
+{% endblock %}

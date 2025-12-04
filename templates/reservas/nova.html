@@ -1,0 +1,49 @@
+{% extends "layouts/base.html" %}
+{% block title %}Nova Reserva{% endblock %}
+{% block content %}
+  <h2>Nova Reserva</h2>
+  <form action="{{ url_for('reserva.criar_reserva') }}" method="post" class="form">
+    <label>Tipo
+      <select name="tipo" id="tipo-reserva" onchange="toggleCampos()">
+        <option value="sala">Sala</option>
+        <option value="equipamento">Equipamento</option>
+      </select>
+    </label>
+    <label>Data<input type="date" name="data" required></label>
+    <label>Horário Início<input type="time" name="horario_inicio" required></label>
+    <label>Horário Fim<input type="time" name="horario_fim" required></label>
+    <label>Finalidade<textarea name="finalidade" rows="4"></textarea></label>
+
+    <div id="campo-sala">
+      <label>Sala
+        <select name="id_sala">
+          <option value="">-- Selecionar sala --</option>
+          {% for s in salas %}
+            <option value="{{ s.id }}">{{ s.nome }} ({{ s.tipo }})</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div id="campo-equipamento" style="display:none;">
+      <label>Equipamento
+        <select name="id_equipamento">
+          <option value="">-- Selecionar equipamento --</option>
+          {% for e in equipamentos %}
+            <option value="{{ e.id }}">{{ e.nome }} ({{ e.tipo }})</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <button type="submit">Solicitar</button>
+  </form>
+
+  <script>
+    function toggleCampos(){
+      const tipo = document.getElementById('tipo-reserva').value;
+      document.getElementById('campo-sala').style.display = tipo === 'sala' ? 'block' : 'none';
+      document.getElementById('campo-equipamento').style.display = tipo === 'equipamento' ? 'block' : 'none';
+    }
+  </script>
+{% endblock %}

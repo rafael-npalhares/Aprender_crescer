@@ -1,0 +1,123 @@
+{% extends "layouts/base.html" %}
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Sistema Acadêmico MNRT</h1>
+        <p class="hero-subtitle">
+            Um sistema completo para gerenciamento de avisos, reservas, horários e usuários.
+            Desenhado para ser eficiente, moderno e intuitivo.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('auth.login_page') }}" class="btn-primary">Entrar</a>
+            <a href="#devs" class="btn-secondary">Conhecer Desenvolvedores</a>
+        </div>
+    </div>
+</section>
+
+<section class="features-section">
+    <h2 class="section-title">Recursos do Sistema</h2>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fa-solid fa-bullhorn"></i>
+            <h3>Avisos</h3>
+            <p>Publicação e gerenciamento de comunicados importantes de forma dinâmica e rápida.</p>
+        </div>
+
+        <div class="feature-card">
+            <i class="fa-solid fa-calendar-check"></i>
+            <h3>Reservas</h3>
+            <p>Controle de agendamentos e solicitações totalmente integrado na plataforma.</p>
+        </div>
+
+        <div class="feature-card">
+            <i class="fa-solid fa-clock"></i>
+            <h3>Horários</h3>
+            <p>Visualização limpa e organizada de horários para professores e alunos.</p>
+        </div>
+
+        <div class="feature-card">
+            <i class="fa-solid fa-users"></i>
+            <h3>Gerenciamento</h3>
+            <p>Perfis de administrador, professor e aluno com permissões específicas.</p>
+        </div>
+    </div>
+</section>
+
+<section id="devs" class="devs-section">
+    <h2 class="section-title">Desenvolvedores do Projeto</h2>
+
+    <div class="devs-container">
+
+        <!-- TIAGO -->
+        <div class="dev-card" data-user="tmarghotti">
+            <img class="dev-avatar" src="" alt="Foto Tiago">
+            <h3 class="dev-name">Carregando...</h3>
+            <p class="dev-bio">Carregando bio...</p>
+            <p class="dev-stats">Followers: -- | Repos: --</p>
+            <a class="github-link" href="https://github.com/tmarghotti" target="_blank">
+                <i class="fa-brands fa-github"></i> GitHub
+            </a>
+        </div>
+
+        <!-- NATAN -->
+        <div class="dev-card" data-user="natanpassos-lab">
+            <img class="dev-avatar" src="" alt="Foto Natan">
+            <h3 class="dev-name">Carregando...</h3>
+            <p class="dev-bio">Carregando bio...</p>
+            <p class="dev-stats">Followers: -- | Repos: --</p>
+            <a class="github-link" href="https://github.com/natanpassos-lab" target="_blank">
+                <i class="fa-brands fa-github"></i> GitHub
+            </a>
+        </div>
+
+        <!-- RAFAEL -->
+        <div class="dev-card" data-user="rafael-npalhares">
+            <img class="dev-avatar" src="" alt="Foto Rafael">
+            <h3 class="dev-name">Carregando...</h3>
+            <p class="dev-bio">Carregando bio...</p>
+            <p class="dev-stats">Followers: -- | Repos: --</p>
+            <a class="github-link" href="https://github.com/rafael-npalhares" target="_blank">
+                <i class="fa-brands fa-github"></i> GitHub
+            </a>
+        </div>
+
+        <!-- MURILO -->
+        <div class="dev-card" data-user="murilo541">
+            <img class="dev-avatar" src="" alt="Foto Murilo">
+            <h3 class="dev-name">Carregando...</h3>
+            <p class="dev-bio">Carregando bio...</p>
+            <p class="dev-stats">Followers: -- | Repos: --</p>
+            <a class="github-link" href="https://github.com/murilo541" target="_blank">
+                <i class="fa-brands fa-github"></i> GitHub
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll(".dev-card").forEach(async card => {
+        const username = card.getAttribute("data-user");
+        const url = `https://api.github.com/users/${username}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            card.querySelector(".dev-avatar").src = data.avatar_url;
+            card.querySelector(".dev-name").textContent = data.name || username;
+            card.querySelector(".dev-bio").textContent = data.bio || "Desenvolvedor do sistema MNRT.";
+            card.querySelector(".dev-stats").textContent =
+                `Followers: ${data.followers} | Repos: ${data.public_repos}`;
+        } catch (e) {
+            console.error("Erro ao carregar dados do GitHub:", e);
+        }
+    });
+</script>
+
+{% endblock %}

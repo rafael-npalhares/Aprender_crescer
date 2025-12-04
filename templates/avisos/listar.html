@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+{% block title %}Avisos{% endblock %}
+{% block content %}
+  <h2>Avisos</h2>
+
+  <section class="avisos-list">
+    {% for a in avisos %}
+      <article class="aviso">
+        {% if a.fixado %}<span class="badge">FIXADO</span>{% endif %}
+        <h3><a href="{{ url_for('aviso.ver_aviso', id=a.id) }}">{{ a.titulo }}</a></h3>
+        <p class="muted">{{ a.data_postagem | data_hora_br }}</p>
+        <p>{{ a.descricao[:220] }}{% if a.descricao|length > 220 %}...{% endif %}</p>
+      </article>
+    {% else %}
+      <p>Não há avisos no momento.</p>
+    {% endfor %}
+  </section>
+{% endblock %}

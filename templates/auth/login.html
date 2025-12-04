@@ -1,32 +1,23 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Login</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card"><div><strong>Entrar</strong></div></div>
+{% extends "layouts/base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+  <h2>Entrar</h2>
+  <form action="{{ url_for('auth.fazer_login') }}" method="post" class="form">
+    <label>Email
+      <input type="email" name="email" required>
+    </label>
+    <label>Senha
+      <input type="password" name="senha" required>
+    </label>
+    <label>Tipo
+      <select name="tipo">
+        <option value="aluno">Aluno</option>
+        <option value="professor">Professor</option>
+        <option value="admin">Administrador</option>
+      </select>
+    </label>
+    <button type="submit">Entrar</button>
+  </form>
 
-    <div style="max-width:420px;margin:18px auto">
-      <div class="card">
-        <h2>Entrar</h2>
-        <form action="/auth/login" method="post">
-          <label>Email</label><br>
-          <input name="email" type="email" required style="width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ddd">
-          <label>Senha</label><br>
-          <input name="password" type="password" required style="width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ddd">
-          <div style="margin-top:10px">
-            <button class="btn" type="submit">Entrar</button>
-            <a class="btn secondary" href="/auth/selecionar_perfil.html">Selecionar Perfil</a>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
-  </div>
-</body>
-</html>
+  <p>Não tem conta? <a href="{{ url_for('auth.registro_aluno_page') }}">Registrar aluno</a> | <a href="{{ url_for('auth.registro_professor_page') }}">Registrar professor</a></p>
+{% endblock %}

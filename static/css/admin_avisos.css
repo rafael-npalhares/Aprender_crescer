@@ -1,0 +1,7 @@
+/* Pequenas variações para painel admin */
+.admin-layout{display:flex;gap:20px}
+.admin-sidebar{width:220px;background:#fff;padding:16px;border-radius:8px;border:1px solid #eef3f7}
+.admin-sidebar ul{list-style:none;padding:0;margin:0}
+.admin-sidebar a{display:block;padding:8px 4px;text-decoration:none;color:#222;border-radius:6px}
+.admin-sidebar a:hover{background:#f1f6fb}
+.admin-main{flex:1;background:transparent;padding:4px}

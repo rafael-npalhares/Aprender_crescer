@@ -1,51 +1,26 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin - Dashboard</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card">
-      <div><strong>Admin - Dashboard</strong><div class="small">Resumo geral</div></div>
-      <div><span class="small">Usuário: <strong>Admin</strong></span></div>
-    </div>
+{% extends "layouts/base_admin.html" %}
+{% block title %}Dashboard Admin{% endblock %}
+{% block admin_content %}
+  <h2>Dashboard</h2>
 
-    <div class="app" style="margin-top:16px;">
-      <div class="sidebar card">
-        <h3>Admin</h3>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="gerenciar_avisos.html">Gerenciar Avisos</a>
-        <a href="gerenciar_horarios.html">Gerenciar Horários</a>
-        <a href="gerenciar_reservas.html">Gerenciar Reservas</a>
-        <a href="gerenciar_usuarios.html">Gerenciar Usuários</a>
-        <a href="relatorios.html">Relatórios</a>
-      </div>
-
-      <div class="main">
-        <div class="card">
-          <h2>Dashboard Admin</h2>
-          <div class="grid">
-            <div class="card">
-              <h4>Usuários</h4>
-              <p class="small">Total: 120</p>
-            </div>
-            <div class="card">
-              <h4>Reservas</h4>
-              <p class="small">Ativas: 8</p>
-            </div>
-            <div class="card">
-              <h4>Avisos</h4>
-              <p class="small">Recentes: 4</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
+  {% if estatisticas %}
+  <div class="stats-grid">
+    <div class="stat">Alunos<br><strong>{{ estatisticas.total_alunos }}</strong></div>
+    <div class="stat">Professores<br><strong>{{ estatisticas.total_professores }}</strong></div>
+    <div class="stat">Admins<br><strong>{{ estatisticas.total_administradores }}</strong></div>
+    <div class="stat">Reservas Pendentes<br><strong>{{ estatisticas.reservas_pendentes }}</strong></div>
+    <div class="stat">Avisos<br><strong>{{ estatisticas.total_avisos }}</strong></div>
   </div>
-</body>
-</html>
+  {% endif %}
+
+  <section>
+    <h3>Atividades Recentes</h3>
+    <ul>
+      {% for a in admin_model.buscar_atividades_recentes() if admin_model is defined else [] %}
+        <li>{{ a.tipo_atividade }} - {{ a.titulo or a.id }} - {{ a.data_criacao | data_hora_br }}</li>
+      {% else %}
+        <li>Nenhuma atividade.</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}

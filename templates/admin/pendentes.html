@@ -1,0 +1,68 @@
+{% extends 'layouts/base_admin.html' %}
+
+{% block title %}Reservas Pendentes - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>⏳ Reservas Pendentes de Aprovação</h3>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if reservas %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Professor</th>
+                    <th>Tipo</th>
+                    <th>Local/Item</th>
+                    <th>Data</th>
+                    <th>Horário</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                    <tr>
+                        <td>{{ reserva.professor_nome }}</td>
+                        <td><span class="badge badge-info">{{ reserva.tipo|capitalize }}</span></td>
+                        <td>
+                            {% if reserva.sala_nome %}
+                                {{ reserva.sala_nome }}
+                            {% else %}
+                                {{ reserva.equipamento_nome }}
+                            {% endif %}
+                        </td>
+                        <td>{{ reserva.data|data_br }}</td>
+                        <td>{{ reserva.horario_inicio|hora_br }} - {{ reserva.horario_fim|hora_br }}</td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <form method="POST" action="{{ url_for('reserva.admin_aprovar_reserva', id=reserva.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-success" style="padding: 0.5rem;">Aprovar</button>
+                                </form>
+                                
+                                <form method="POST" action="{{ url_for('reserva.admin_reprovar_reserva', id=reserva.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja reprovar?');">
+                                    <button type="submit" class="btn btn-danger" style="padding: 0.5rem;">Reprovar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="text-align: center; padding: 3rem; color: var(--secondary);">
+            <p>Nenhuma reserva pendente no momento.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

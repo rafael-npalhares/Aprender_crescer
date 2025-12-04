@@ -1,0 +1,11 @@
+{% extends "layouts/base_professor.html" %}
+{% block professor_content %}
+  <h2>Minhas Turmas</h2>
+  <ul>
+    {% for t in turmas %}
+      <li>{{ t.nome }}</li>
+    {% else %}
+      <li>Nenhuma turma atribuída.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

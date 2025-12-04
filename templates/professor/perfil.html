@@ -1,0 +1,8 @@
+{% extends "layouts/base_professor.html" %}
+{% block professor_content %}
+  <h2>Perfil do Professor</h2>
+  <p><strong>Nome:</strong> {{ professor.nome }}</p>
+  <p><strong>Email:</strong> {{ professor.email }}</p>
+  <p><strong>Especialidade:</strong> {{ professor.especialidade }}</p>
+  <a href="{{ url_for('professor.form_editar_perfil') }}">Editar perfil</a>
+{% endblock %}

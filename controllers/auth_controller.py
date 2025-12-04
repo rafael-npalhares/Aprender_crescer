@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from models.usuario import Usuario
 
-
 auth_bp = Blueprint('auth', __name__)
 
+# ==========================
+# LOGIN
+# ==========================
 @auth_bp.route('/login', methods=['GET'])
 def login_page():
     return render_template('auth/login.html')
@@ -18,26 +20,27 @@ def fazer_login():
     if tipo_usuario == 'aluno':
         usuario = usuario_model.login_aluno(email, senha)
         tipo_sessao = 'aluno'
-        redirect_url = '/aluno/dashboard'  
-        
+        redirect_url = url_for('aluno.perfil')   # rota REAL a ajustar depois
+    
     elif tipo_usuario == 'professor':
         usuario = usuario_model.login_professor(email, senha)
         tipo_sessao = 'professor'
-        redirect_url = '/professor/dashboard'
+        redirect_url = url_for('professor.perfil') # rota REAL a ajustar depois
         
     elif tipo_usuario == 'admin':
         usuario = usuario_model.login_admin(email, senha)
         tipo_sessao = 'administrador'
-        redirect_url = '/admin/avisos'
+        redirect_url = url_for('aviso.admin_listar_avisos')
+
     else:
         flash('Tipo de usuário inválido!', 'error')
         return redirect(url_for('auth.login_page'))
     
     if usuario:
-        session['usuario_id'] = usuario['id']           # ID do banco
-        session['usuario_nome'] = usuario['nome']       # Nome
-        session['usuario_email'] = usuario['email']     # Email
-        session['usuario_tipo'] = tipo_sessao          # Tipo (aluno/professor/admin)
+        session['usuario_id'] = usuario['id']
+        session['usuario_nome'] = usuario['nome']
+        session['usuario_email'] = usuario['email']
+        session['usuario_tipo'] = tipo_sessao
         
         flash(f'Bem-vindo(a), {usuario["nome"]}!', 'success')
         return redirect(redirect_url)
@@ -46,22 +49,25 @@ def fazer_login():
         flash('Email ou senha incorretos!', 'error')
         return redirect(url_for('auth.login_page'))
 
+# ==========================
+# LOGOUT
+# ==========================
 @auth_bp.route('/logout')
 def logout():
-    
     nome = session.get('usuario_nome', 'Usuário')
     session.clear()
     flash(f'Até logo, {nome}!', 'success')
-    
     return redirect(url_for('auth.login_page'))
 
+# ==========================
+# REGISTRO ALUNO
+# ==========================
 @auth_bp.route('/registro/aluno', methods=['GET'])
 def registro_aluno_page():
     return render_template('auth/registro_aluno.html')
 
 @auth_bp.route('/registro/aluno', methods=['POST'])
 def registrar_aluno():
-
     nome = request.form['nome']
     email = request.form['email']
     senha = request.form['senha']
@@ -85,6 +91,9 @@ def registrar_aluno():
         flash('Email já cadastrado ou erro ao registrar!', 'error')
         return redirect(url_for('auth.registro_aluno_page'))
 
+# ==========================
+# REGISTRO PROFESSOR
+# ==========================
 @auth_bp.route('/registro/professor', methods=['GET'])
 def registro_professor_page():
     return render_template('auth/registro_professor.html')
@@ -115,18 +124,20 @@ def registrar_professor():
         flash('Email já cadastrado ou erro ao registrar!', 'error')
         return redirect(url_for('auth.registro_professor_page'))
 
+# ==========================
+# REGISTRO ADMIN
+# ==========================
 @auth_bp.route('/registro/admin', methods=['GET'])
 def registro_admin_page():
     return render_template('auth/registro_admin.html')
 
 @auth_bp.route('/registro/admin', methods=['POST'])
 def registrar_admin():
-
     nome = request.form['nome']
     email = request.form['email']
     senha = request.form['senha']
     confirmar_senha = request.form['confirmar_senha']
-    senha_mestra = request.form['senha_mestra']  # Senha especial para criar admin
+    senha_mestra = request.form['senha_mestra']
     
     if senha != confirmar_senha:
         flash('As senhas não coincidem!', 'error')

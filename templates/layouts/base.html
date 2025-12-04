@@ -1,29 +1,56 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sistema Escolar</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Aprender & Crescer{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
-  <div class="container">
-    <div class="topbar card">
-      <div>
-        <strong>Minha Escola</strong>
-        <div class="small">Painel de controle</div>
-      </div>
-      <div>
-        <span class="small">Usuário: <strong>Visitante</strong></span>
-      </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{{ url_for('index') }}">Aprender & Crescer</a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="{{ url_for('index') }}">Início</a></li>
+          <li><a href="{{ url_for('aviso.listar_avisos') }}">Avisos</a></li>
+          {% if usuario_logado %}
+            {% if usuario_tipo == 'aluno' %}
+              <li><a href="{{ url_for('aluno.perfil') }}">Meu Perfil</a></li>
+            {% elif usuario_tipo == 'professor' %}
+              <li><a href="{{ url_for('professor.perfil') }}">Meu Perfil</a></li>
+            {% elif usuario_tipo == 'administrador' %}
+              <li><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
+          {% else %}
+            <li><a href="{{ url_for('auth.login_page') }}">Entrar</a></li>
+            <li><a href="{{ url_for('auth.registro_aluno_page') }}">Registrar</a></li>
+          {% endif %}
+        </ul>
+      </nav>
     </div>
+  </header>
 
-    
-    <div id="app-root"></div>
+  <main class="container main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, msg in messages %}
+            <div class="flash {{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
-    <div style="text-align:center; margin-top:18px;" class="small">
-      © 2025 - Sistema Escolar
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>&copy; {{ current_year or "" }} Aprender & Crescer</small>
     </div>
-  </div>
+  </footer>
 </body>
 </html>

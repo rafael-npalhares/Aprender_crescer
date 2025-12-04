@@ -1,15 +1,7 @@
-<!doctype html>
-<html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>500 - Erro interno</title>
-<link rel="stylesheet" href="/static/css/styles.css"></head>
-<body>
-  <div class="container">
-    <div class="card" style="max-width:640px;margin:40px auto;text-align:center">
-      <h1>500</h1>
-      <p>Ocorreu um erro no servidor. Tente novamente mais tarde.</p>
-      <a class="btn" href="/">Página inicial</a>
-    </div>
-  </div>
-</body>
-</html>
+{% extends "layouts/base.html" %}
+{% block title %}500 - Erro Interno{% endblock %}
+{% block content %}
+  <h2>500 - Erro interno</h2>
+  <p>Ocorreu um erro no servidor. Tente novamente mais tarde.</p>
+  <p><a href="{{ url_for('index') }}">Voltar ao início</a></p>
+{% endblock %}

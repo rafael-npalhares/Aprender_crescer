@@ -1,0 +1,99 @@
+{% extends 'layouts/base_professor.html' %}
+
+{% block title %}Nova Reserva{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">➕ Nova Reserva</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('reserva.criar_reserva') }}">
+            <div class="form-group">
+                <label for="tipo" class="form-label">🏷️ Tipo de Reserva *</label>
+                <select id="tipo" name="tipo" class="form-select" required onchange="toggleTipo()">
+                    <option value="">Selecione...</option>
+                    <option value="sala">🏫 Sala</option>
+                    <option value="equipamento">💻 Equipamento</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="div_sala" style="display: none;">
+                <label for="id_sala" class="form-label">🏫 Sala *</label>
+                <select id="id_sala" name="id_sala" class="form-select">
+                    <option value="">Selecione uma sala...</option>
+                    {% for sala in salas %}
+                    <option value="{{ sala.id }}">{{ sala.nome }} ({{ sala.tipo|capitalize }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" id="div_equipamento" style="display: none;">
+                <label for="id_equipamento" class="form-label">💻 Equipamento *</label>
+                <select id="id_equipamento" name="id_equipamento" class="form-select">
+                    <option value="">Selecione um equipamento...</option>
+                    {% for equip in equipamentos %}
+                    <option value="{{ equip.id }}">{{ equip.nome }} ({{ equip.tipo }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="data" class="form-label">📅 Data *</label>
+                <input type="date" id="data" name="data" class="form-control" required>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="horario_inicio" class="form-label">🕐 Horário Início *</label>
+                        <input type="time" id="horario_inicio" name="horario_inicio" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="horario_fim" class="form-label">🕐 Horário Fim *</label>
+                        <input type="time" id="horario_fim" name="horario_fim" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="finalidade" class="form-label">📝 Finalidade *</label>
+                <textarea id="finalidade" name="finalidade" class="form-control" rows="4" placeholder="Descreva o motivo da reserva" required></textarea>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">✅ Criar Reserva</button>
+                <a href="{{ url_for('reserva.listar_reservas') }}" class="btn btn-secondary">❌ Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleTipo() {
+    const tipo = document.getElementById('tipo').value;
+    const divSala = document.getElementById('div_sala');
+    const divEquip = document.getElementById('div_equipamento');
+    const selectSala = document.getElementById('id_sala');
+    const selectEquip = document.getElementById('id_equipamento');
+    
+    if (tipo === 'sala') {
+        divSala.style.display = 'block';
+        divEquip.style.display = 'none';
+        selectSala.required = true;
+        selectEquip.required = false;
+    } else if (tipo === 'equipamento') {
+        divSala.style.display = 'none';
+        divEquip.style.display = 'block';
+        selectSala.required = false;
+        selectEquip.required = true;
+    } else {
+        divSala.style.display = 'none';
+        divEquip.style.display = 'none';
+        selectSala.required = false;
+        selectEquip.required = false;
+    }
+}
+</script>
+{% endblock %}

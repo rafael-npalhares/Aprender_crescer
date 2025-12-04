@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aprender & Crescer{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('index') }}" style="text-decoration: none;">
+                    <h1>🎓 Aprender & Crescer</h1>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('aviso.listar_avisos') }}">Avisos</a>
+                
+                {% if usuario_logado %}
+                    <span style="color: var(--secondary);">Olá, {{ usuario_nome }}!</span>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger" style="padding: 0.5rem 1rem;">Sair</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login_page') }}" class="btn btn-primary" style="padding: 0.5rem 1rem;">Entrar</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Aprender & Crescer - Todos os direitos reservados</p>
+            <p>Rua do Conhecimento, 1200</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

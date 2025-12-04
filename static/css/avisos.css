@@ -1,0 +1,6 @@
+/* Estilos específicos para lista e detalhe de avisos */
+.aviso{background:#fff;padding:14px;border-radius:8px;margin-bottom:12px;border:1px solid #eef3f7}
+.aviso h3{margin:0 0 6px}
+.aviso .muted{font-size:0.85rem}
+.aviso-detalhe{background:#fff;padding:18px;border-radius:8px;border:1px solid #eef3f7}
+.descricao{white-space:pre-wrap}

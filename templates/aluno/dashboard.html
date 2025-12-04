@@ -1,32 +1,34 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dashboard - Aluno</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card"><div><strong>Dashboard Aluno</strong></div></div>
+{% extends "base.html" %}
 
-    <div class="app" style="margin-top:16px;">
-      <div class="sidebar card">
-        <h3>Aluno</h3>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="avisos.html">Avisos</a>
-        <a href="horarios.html">Horários</a>
-      </div>
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Olá, {{ aluno.nome }}!</h1>
+    <a href="{{ url_for('aluno.grade_horaria') }}" class="btn">Ver Meus Horários</a>
+</div>
 
-      <div class="main">
-        <div class="card">
-          <h2>Bem-vindo, Aluno</h2>
-          <p>Resumo rápido das suas atividades e próximas aulas.</p>
-        </div>
-      </div>
+<div class="dashboard-grid">
+    <div class="card" style="grid-column: span 2;">
+        <h3>📌 Últimos Avisos da Escola</h3>
+        {% if avisos %}
+            <ul style="list-style: none; padding: 0;">
+                {% for aviso in avisos %}
+                <li style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <strong>{{ aviso.titulo }}</strong>
+                    <p style="margin: 5px 0;">{{ aviso.conteudo }}</p>
+                    <small style="color: #666;">Postado em: {{ aviso.data_criacao | data_br }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum aviso recente.</p>
+        {% endif %}
     </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
-  </div>
-</body>
-</html>
+    
+    <div class="card">
+        <h3>Meus Dados</h3>
+        <p><strong>Matrícula:</strong> {{ aluno.matricula }}</p>
+        <p><strong>Turma:</strong> {{ aluno.turma_nome if aluno.turma_nome else 'Não alocado' }}</p>
+        <p><strong>Email:</strong> {{ aluno.email }}</p>
+    </div>
+</div>
+{% endblock %}

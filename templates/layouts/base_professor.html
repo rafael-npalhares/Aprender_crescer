@@ -1,38 +1,14 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Professor — Painel</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card">
-      <div>
-        <strong>Professor - Sistema</strong>
-        <div class="small">Painel do professor</div>
-      </div>
-      <div>
-        <span class="small">Usuário: <strong>Professor</strong></span>
-      </div>
-    </div>
-
-    <div class="app" style="margin-top:16px;">
-      <div class="sidebar card">
-        <h3>Professor</h3>
-        <a href="/professor/dashboard.html">Dashboard</a>
-        <a href="/professor/horarios.html">Horários</a>
-        <a href="/professor/minhas_reservas.html">Minhas Reservas</a>
-        <a href="/professor/reservas.html">Reservas</a>
-      </div>
-
-      <div class="main"></div>
-    </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">
-      © 2025 - Sistema Escolar
-    </div>
-  </div>
-</body>
-</html>
+{% extends "layouts/base.html" %}
+{% block content %}
+<div class="professor-layout">
+  <nav class="professor-top">
+    <a href="{{ url_for('professor.perfil') }}">Perfil</a> |
+    <a href="{{ url_for('professor.horarios') }}">Horários</a> |
+    <a href="{{ url_for('professor.turmas') }}">Turmas</a> |
+    <a href="{{ url_for('professor.disciplinas') }}">Disciplinas</a>
+  </nav>
+  <section class="professor-main">
+    {% block professor_content %}{% endblock %}
+  </section>
+</div>
+{% endblock %}

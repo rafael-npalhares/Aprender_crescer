@@ -1,0 +1,13 @@
+{% extends "layouts/base.html" %}
+{% block title %}Registrar - Professor{% endblock %}
+{% block content %}
+  <h2>Registro - Professor</h2>
+  <form action="{{ url_for('auth.registrar_professor') }}" method="post" class="form">
+    <label>Nome<input name="nome" required></label>
+    <label>Email<input type="email" name="email" required></label>
+    <label>Especialidade<input name="especialidade" required></label>
+    <label>Senha<input type="password" name="senha" required></label>
+    <label>Confirmar Senha<input type="password" name="confirmar_senha" required></label>
+    <button type="submit">Registrar</button>
+  </form>
+{% endblock %}

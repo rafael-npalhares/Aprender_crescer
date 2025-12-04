@@ -1,43 +1,58 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gerenciar Usuários</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="topbar card"><div><strong>Gerenciar Usuários</strong></div></div>
+{% extends "layouts/base_admin.html" %}
+{% block admin_content %}
+  <h2>Gerenciar Usuários</h2>
 
-    <div class="app" style="margin-top:16px;">
-      <div class="sidebar card">
-        <h3>Admin</h3>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="gerenciar_avisos.html">Gerenciar Avisos</a>
-        <a href="gerenciar_horarios.html">Gerenciar Horários</a>
-        <a href="gerenciar_reservas.html">Gerenciar Reservas</a>
-        <a href="gerenciar_usuarios.html">Gerenciar Usuários</a>
-        <a href="relatorios.html">Relatórios</a>
-      </div>
+  {% if tipo == 'aluno' %}
+    <h3>Alunos</h3>
+    <a class="btn" href="#" onclick="document.getElementById('criar-aluno').scrollIntoView()">Criar aluno</a>
+    <table class="table">
+      <thead><tr><th>Nome</th><th>Email</th><th>Ações</th></tr></thead>
+      <tbody>
+        {% for u in alunos %}
+          <tr>
+            <td>{{ u.nome }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <a href="{{ url_for('admin.form_editar_aluno', id=u.id) }}">Editar</a>
+              <form action="{{ url_for('admin.deletar_aluno', id=u.id) }}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Deletar?')">Deletar</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="3">Nenhum aluno.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-      <div class="main">
-        <div class="card">
-          <h2>Usuários</h2>
-          <table class="table">
-            <thead><tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Ações</th></tr></thead>
-            <tbody>
-              <tr><td>Ana</td><td>ana@escola.com</td><td>Aluno</td>
-                <td><a class="btn secondary" href="#">Editar</a></td></tr>
-              <tr><td>Rafael</td><td>rafael@escola.com</td><td>Professor</td>
-                <td><a class="btn secondary" href="#">Editar</a></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align:center; margin-top:18px;" class="small">© 2025 - Sistema Escolar</div>
-  </div>
-</body>
-</html>
+    <section id="criar-aluno">
+      <h4>Criar Aluno</h4>
+      <form action="{{ url_for('admin.criar_aluno') }}" method="post">
+        <label>Nome<input name="nome" required></label>
+        <label>Email<input type="email" name="email" required></label>
+        <label>Senha<input type="password" name="senha" required></label>
+        <button type="submit">Criar</button>
+      </form>
+    </section>
+  {% elif tipo == 'administrador' %}
+    <h3>Administradores</h3>
+    <table class="table">
+      <thead><tr><th>Nome</th><th>Email</th><th>Ações</th></tr></thead>
+      <tbody>
+        {% for u in administradores %}
+          <tr>
+            <td>{{ u.nome }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <form action="{{ url_for('admin.deletar_admin', id=u.id) }}" method="post" style="display:inline;">
+                <button type="submit">Deletar</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="3">Nenhum administrador.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

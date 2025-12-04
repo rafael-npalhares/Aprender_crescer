@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+{% block title %}Registrar - Aluno{% endblock %}
+{% block content %}
+  <h2>Registro - Aluno</h2>
+  <form action="{{ url_for('auth.registrar_aluno') }}" method="post" class="form">
+    <label>Nome<input name="nome" required></label>
+    <label>Email<input type="email" name="email" required></label>
+    <label>Senha<input type="password" name="senha" required></label>
+    <label>Confirmar Senha<input type="password" name="confirmar_senha" required></label>
+    <button type="submit">Registrar</button>
+  </form>
+{% endblock %}
